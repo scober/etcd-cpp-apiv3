@@ -35,6 +35,11 @@ endif()
 if(BUILD_ETCD_CORE_ONLY)
     # add the core library, includes the sycnhronous client only
     add_library(etcd-cpp-api-core $<TARGET_OBJECTS:etcd-cpp-api-core-objects>)
+    # this is sort of a hacky change that will expose header files that aren't
+    #   actually compiled
+    target_include_directories(etcd-cpp-api-core PUBLIC
+                                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+                                                $<INSTALL_INTERFACE:include>)
     use_cxx(etcd-cpp-api-core)
     set_exceptions(etcd-cpp-api-core)
     target_link_libraries(etcd-cpp-api-core PUBLIC
@@ -51,6 +56,9 @@ else()
     # add the client with asynchronus client
     add_library(etcd-cpp-api $<TARGET_OBJECTS:etcd-cpp-api-core-objects>
                             "${CMAKE_CURRENT_SOURCE_DIR}/Client.cpp")
+    target_include_directories(etcd-cpp-api PUBLIC
+                                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+                                           $<INSTALL_INTERFACE:include>)
     use_cxx(etcd-cpp-api)
     set_exceptions(etcd-cpp-api)
     target_link_libraries(etcd-cpp-api PUBLIC
